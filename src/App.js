@@ -1,201 +1,115 @@
-// import React, { useEffect } from "react";
-// import {
-//   DndContext,
-//   closestCenter,
-//   useDraggable,
-//   useDroppable,
-// } from "@dnd-kit/core";
-// import { arrayMove } from "@dnd-kit/sortable";
-// import { useSelector, useDispatch } from "react-redux";
-// import { reorderColumn, moveTask, setTasks } from "./ReduxState/TaskSlice";
-// import axios from "axios";
-// import { useNavigate } from "react-router-dom";
-
-// // Droppable Component
-// function Droppable({ id, children }) {
-//   const { setNodeRef } = useDroppable({ id });
-//   const navigate = useNavigate();
-//   const handleAdd = () => {}
-
-//   return (
-//     <div
-//       ref={setNodeRef}
-//       style={{
-//         width: "200px",
-//         minHeight: "300px",
-//         backgroundColor: "#f4f4f4",
-//         borderRadius: "8px",
-//         padding: "10px",
-//         boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-//       }}
-//     >
-//       <h3 style={{ textAlign: "center" }}>{id}</h3>
-//       {children}
-//       {id && <button onClick={handleAdd}>Add</button>}
-//     </div>
-//   );
-// }
-
-// // Draggable Component
-// function Draggable({ id, title, completed }) {
-//   const { attributes, listeners, setNodeRef, transform } = useDraggable({
-//     id,
-//   });
-
-//   const style = {
-//     transform: `translate3d(${transform?.x ?? 0}px, ${transform?.y ?? 0}px, 0)`,
-//     userSelect: "none",
-//     padding: "10px",
-//     margin: "10px 0",
-//     borderRadius: "4px",
-//     backgroundColor: "#fff",
-//     boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
-//   };
-
-//   console.log("completed",completed)
-
-//   return (
-//     <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-//       {title} 
-//       {/* {completed === false && <button>Add</button>} */}
-//     </div>
-//   );
-// }
-
-// function App() {
-//   const columns = useSelector((state) => state.tasks);
-//   const dispatch = useDispatch();
-
-//   useEffect(() => {
-//     const fetchTasks = async () => {
-//       try {
-//         const response = await axios.get(
-//           "https://jsonplaceholder.typicode.com/todos"
-//         );
-//         const apiData = response.data;
-
-//         // Map "complete" tasks to column A and "incomplete" to column E
-//         const mappedData = {
-//           A: apiData
-//             .filter((task) => task.completed === true)
-//             .map((task) => ({ id: task.id, title: task.title,completed: task.completed })),
-//           E: apiData
-//             .filter((task) => task.completed === false)
-//             .map((task) => ({ id: task.id, title: task.title,completed: task.completed })),
-//         };
-
-//         // Dispatch the processed data to Redux
-//         dispatch(setTasks(mappedData));
-//       } catch (error) {
-//         console.error("Error fetching tasks:", error);
-//       }
-//     };
-
-//     fetchTasks();
-//   }, [dispatch]);
-
-//   const handleDragEnd = ({ active, over }) => {
-//     if (!over) return;
-
-//     console.log("Active Item:", active);
-//     console.log("Over Item:", over);
-
-//     const sourceColumnId = Object.keys(columns).find(
-//       (key) => columns[key].some((task) => task.id === parseInt(active.id)) // Ensure correct task comparison
-//     );
-//     const destinationColumnId = over.id;
-
-//     console.log("Source Column ID:", sourceColumnId);
-//     console.log("Destination Column ID:", destinationColumnId);
-
-//     if (!sourceColumnId || !destinationColumnId) return;
-
-//     // Ensure both source and destination columns exist in state
-//     if (columns[sourceColumnId] && columns[destinationColumnId]) {
-//       if (sourceColumnId === destinationColumnId) {
-//         const sourceColumn = Array.from(columns[sourceColumnId]);
-//         const oldIndex = sourceColumn.findIndex(
-//           (task) => task.id === parseInt(active.id)
-//         );
-//         const newIndex = sourceColumn.findIndex(
-//           (task) => task.id === parseInt(over.id)
-//         );
-
-//         if (oldIndex === -1 || newIndex === -1) {
-//           console.error("Task not found in source or destination column");
-//           return;
-//         }
-
-//         const reorderedTasks = arrayMove(sourceColumn, oldIndex, newIndex);
-
-//         dispatch(reorderColumn({ columnId: sourceColumnId, reorderedTasks }));
-//       } else {
-//         // Moving between columns: Find the task to move
-//         const sourceColumn = Array.from(columns[sourceColumnId]);
-//         const destinationColumn = Array.from(columns[destinationColumnId]);
-
-//         const movedTaskIndex = sourceColumn.findIndex(
-//           (task) => task.id === parseInt(active.id)
-//         );
-//         if (movedTaskIndex !== -1) {
-//           const [movedTask] = sourceColumn.splice(movedTaskIndex, 1);
-
-//           // Add task to the destination column
-//           destinationColumn.push(movedTask);
-
-//           dispatch(
-//             moveTask({
-//               sourceColumnId,
-//               destinationColumnId,
-//               sourceTasks: sourceColumn,
-//               destinationTasks: destinationColumn,
-//             })
-//           );
-//         } else {
-//           console.error("Task not found in source column.");
-//         }
-//       }
-//     } else {
-//       console.error("Source or destination column does not exist.");
-//     }
-//   };
-
-//   return (
-//     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-//       <div style={{ display: "flex", gap: "10px", padding: "20px" }}>
-//         {Object.keys(columns).map((columnId) => (
-//           <Droppable key={columnId} id={columnId}>
-//             {columns[columnId].map((task) => (
-//               <Draggable
-//                 key={task.id}
-//                 id={task.id.toString()}
-//                 title={task.title}
-//                 completed={task.completed}
-//               />
-//             ))}
-//           </Droppable>
-//         ))}
-//       </div>
-//     </DndContext>
-//   );
-// }
-
-// export default App;
-import React from 'react'
-import { Route, Routes } from 'react-router-dom'
-import Main from './Component/Main'
-import AddTask from './AddComponent/AddTask'
+import React from "react";
+import Navbar from "./Component/Navbar";
+import Sidebar from "./Component/Sidebar";
+import Footer from "./Component/Footer";
 
 const App = () => {
   return (
     <div>
-      <Routes>
-        <Route path='/' element={<Main/>}/>
-        <Route path='/addTask' element={<AddTask/>}/>
-      </Routes>
+      <Navbar />
+      <div className="flex h-screen">
+        {/* <!-- Sidebar --> */}
+        <Sidebar />
+
+        {/* <!-- Main Content --> */}
+        <main className="flex-1 p-6 bg-gray-200">
+          <div className="flex flex-col lg:flex-row justify-between items-center">
+            <h2 className="text-[25px] font-semibold mb-4 lg:mb-0">
+              Hi Karan, Good Afternoon!
+            </h2>
+            <span className="text-gray-500 text-sm">
+              Updated on 27 Jan, 2025
+            </span>
+          </div>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mt-6">
+            {/* First Card */}
+            <div className="bg-white p-4 shadow-md rounded-md w-full">
+              <h3 className="text-gray-500">Total Holders</h3>
+              <p className="text-lg font-bold">-</p>
+              <p className="text-lg font-bold">- MoM</p>
+            </div>
+
+            {/* Second Card */}
+            <div className="bg-white p-4 shadow-md rounded-md w-full">
+              <h3 className="text-gray-500">Issued Shares</h3>
+              <p className="text-lg font-bold">-</p>
+              <p className="text-lg font-bold">- MoM</p>
+            </div>
+
+            {/* Third Card */}
+            <div className="bg-white p-4 shadow-md rounded-md w-full">
+              <h3 className="text-gray-500">eConsents</h3>
+              <p className="text-lg font-bold">-</p>
+              <p className="text-lg font-bold">- (-)</p>
+            </div>
+
+            {/* Last Card with full width on small screens and col-span-5 on large screens */}
+            <div className="bg-white p-5 shadow-lg rounded-md border border-gray-200 flex justify-between lg:col-span-2 w-full">
+              <div className="flex flex-col justify-between space-y-4 text-gray-700 text-sm">
+                <span className="font-medium">-</span>
+                <span className="font-medium">-</span>
+                <span className="font-medium">- (-)</span>
+              </div>
+
+              <div className="flex flex-col justify-between items-end w-0">
+                <div className="flex items-center space-x-2 text-gray-500 text-sm">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M9 2a7 7 0 100 14A7 7 0 009 2zm0 12a5 5 0 110-10 5 5 0 010 10zM2 9a7 7 0 1114 0 7 7 0 01-14 0zm7-5a5 5 0 100 10A5 5 0 009 4zm0 8a3 3 0 110-6 3 3 0 010 6z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="text-sm font-semibold">
+                    No data available
+                  </span>
+                </div>
+
+                <div className="flex justify-end mt-2 text-xs font-semibold space-x-4">
+                  <span className="text-purple-700 border-b-2 border-purple-700 pb-1 cursor-pointer">
+                    5D
+                  </span>
+                  <span className="text-gray-600 hover:text-purple-700 cursor-pointer">
+                    1M
+                  </span>
+                  <span className="text-gray-600 hover:text-purple-700 cursor-pointer">
+                    6M
+                  </span>
+                  <span className="text-gray-600 hover:text-purple-700 cursor-pointer">
+                    YTD
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Additional Cards */}
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white p-4 shadow rounded-lg text-[20px] font-semibold relative w-full">
+              <div className="absolute top-4 right-4 w-32"></div>
+              Work Request (Raised Requests)
+              <p className="text-gray-500 text-sm">
+                All raised requests are shown in chronological order
+              </p>
+            </div>
+            <div className="bg-white p-4 shadow rounded-lg text-[20px] font-semibold w-full">
+              Top Holders
+            </div>
+          </div>
+
+          {/* Footer */}
+        </main>
+      </div>
+    <Footer/>
     </div>
-  )
-}
+  );
+};
 
-export default App
-
+export default App;
